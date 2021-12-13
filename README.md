@@ -21,6 +21,8 @@ _Hint: There may be some lingering bugs on the front end (`/public`) that requir
 
 ## Installation
 
+**No additional packages may be installed to complete this exercise.  Everything that is needed is provided**
+
 This repo already includes the `node_modules` directory, so no installation is needed.
 
 ## Usage
