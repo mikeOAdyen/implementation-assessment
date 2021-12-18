@@ -15,10 +15,9 @@ const checkout = new CheckoutAPI(client);
 
 const app = express();
 app.use(express.json());
-
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
@@ -42,18 +41,40 @@ app.post('/getPaymentMethods', (req, res) => {
     channel: "Web"
   })
     .then(paymentMethodsResponse => res.json(paymentMethodsResponse))
-    .catch(err => res.json({ message: err.message }));
+    .catch((err) => {
+      res.status(err.statusCode);
+      res.json({ message: err.message });
+    });
+    amounts = req.body.amount
 });
 
 // build this endpoint using the example above, along with our dropin documentation -> https://docs.adyen.com/online-payments/web-drop-in/integrated-before-5-0-0?tab=codeBlockmethods_request_7#step-3-make-a-payment
 app.post('/makePayment', (req, res) => {
-  // Your code here
+    const payment_method = req.body;
+  checkout.payments({
+    merchantAccount: config.merchantAccount,
+    paymentMethod: payment_method,
+    amount: { currency: amounts.currency, value: amounts.value },
+    reference: "TEST_ORDER12345",
+    returnUrl: "http://localhost:8080/"
+}).then(paymentResponse => res.json(paymentResponse))
+  .catch((err) => {
+      res.status(err.statusCode);
+      res.json({ message: err.message });
+    });
+  //console.log(res);
 });
 
 // build this endpoint as well, using the documentation -> https://docs.adyen.com/online-payments/web-drop-in/integrated-before-5-0-0?tab=codeBlockmethods_request_7#step-5-additional-payment-details
 app.post('/additionalDetails', async (req, res) => {
-  // Your code here
-})
+  const details = req.body;
+  checkout.paymentsDetails(
+    details  
+  ).then(PaymentCompletionDetailssss  => res.json(PaymentCompletionDetailssss)).catch((err) => {
+      res.status(err.statusCode);
+      res.json({ message: err.message });
+    });
+    });
 
 app.listen(PORT, () => {
   console.log(`Your app is listening on port ${PORT}`);
